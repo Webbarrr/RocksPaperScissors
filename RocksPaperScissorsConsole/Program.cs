@@ -1,15 +1,11 @@
 ﻿using RocksPaperScissorsLibrary.Hands;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RocksPaperScissorsConsole
 {
-    class Program
+    internal class Program
     {
-        static void Main()
+        private static void Main()
         {
             var hand = new Hand();
 
@@ -26,37 +22,29 @@ namespace RocksPaperScissorsConsole
             Console.WriteLine("Thank you for playing!");
         }
 
-        static void Game(IHand computersChoice)
+        private static void Game(IHand computersChoice)
         {
             var usersChoice = UserInput();
 
             // check that we had a valid input
             if (usersChoice == null)
-            {
                 return;
-            }
 
-            // it's a draw
-            if (usersChoice.Name() == computersChoice.Name())
-            {
-                Console.WriteLine("Tie!");
+            // display the state of the game
+            var gameState = usersChoice.Beats(computersChoice);
+            Console.WriteLine($"You {gameState.ToString()}");
+
+            // leave if it's a draw
+            if (gameState == GameEvaluation.GameState.Tie)
                 return;
-            }
 
-            // it's not a draw
-            if (usersChoice.Beats(computersChoice))
-            {
-                Console.WriteLine("You win!");
-                Console.WriteLine($"{usersChoice.Name().ToUpper()} {usersChoice.Action()} {computersChoice.Name().ToUpper()}!");
-            }
-            else
-            {
-                Console.WriteLine("You lose!");
-                Console.WriteLine($"{computersChoice.Name().ToUpper()} {computersChoice.Action()} {usersChoice.Name().ToUpper()}!");
-            }
+            var winningHand = gameState == GameEvaluation.GameState.Win ? usersChoice : computersChoice;
+            var losingHand = gameState == GameEvaluation.GameState.Lose ? usersChoice : computersChoice;
+
+            Console.WriteLine($"{winningHand.Name().ToUpper()} {winningHand.Action()} {losingHand.Name().ToUpper()}!");
         }
 
-        static IHand UserInput()
+        private static IHand UserInput()
         {
             Console.WriteLine("Pick one - rock, paper or scissors or 'q' to quit.");
 
@@ -85,7 +73,7 @@ namespace RocksPaperScissorsConsole
             }
         }
 
-        static bool PlayAgain()
+        private static bool PlayAgain()
         {
             Console.WriteLine("Play again? Y or N");
 
